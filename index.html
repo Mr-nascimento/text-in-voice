@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text in Voice</title>
+</head>
+
+<body>
+
+    <h1>Selecionar voz</h1>
+    <select id="voiceList">
+    </select><br>
+
+    <textarea id="textInput" cols="60" rows="10"></textarea><br>
+    <button id="speakButton">Falar</button>
+
+
+
+    <script>
+        var textInput = document.querySelector('#textInput');
+        var voiceList = document.querySelector('#voiceList');
+        var speakButton = document.querySelector('#speakButton');
+
+        var synth = window.speechSynthesis;
+        var voices = [];
+
+        newVoices()
+        if (speechSynthesis != undefined) {
+            speechSynthesis.onvoiceschanged = newVoices;
+        }
+
+        speakButton.addEventListener('click', () => {
+            var toSpeak = new SpeechSynthesisUtterance(textInput.value);
+            var selectedVoiceName = voiceList.selectedOptions[0].getAttribute('data-name');
+
+            voices.forEach((voice) => {
+                if (voice.name === selectedVoiceName) {
+                    toSpeak.voice = voice;
+                }
+            });
+            synth.speak(toSpeak);
+        });
+
+        function newVoices() {
+            voices = synth.getVoices();
+            var selectedIndex = voiceList.selectedIndex < 0 ? 0 : voiceList.selectedIndex;
+            voiceList.innerHTML = '';
+
+            voices.forEach((voice) => {
+                var listItem = document.createElement('option');
+
+                listItem.textContent = voice.name;
+                listItem.setAttribute('data-lang', voice.lang);
+                listItem.setAttribute('data-name', voice.name);
+                voiceList.appendChild(listItem);
+
+            });
+
+            voiceList.selectedIndex = selectedIndex;
+        }
+
+    </script>
+</body>
+
+</html>
